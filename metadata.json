@@ -1,0 +1,7 @@
+{
+  "name": "LingoLoop",
+  "description": "A daily vocabulary builder with an AI-powered Pronunciation Dojo.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
