@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { generateDailyWord, getPronunciationAudio } from './services/geminiService';
+import { generateDailyWord, getDailyWordAudio } from './services/geminiService';
 import { playPCMAudio } from './services/audioUtils';
 import { WordCard } from './components/WordCard';
 import { PronunciationDojo } from './components/PronunciationDojo';
@@ -23,8 +23,8 @@ const App: React.FC = () => {
         const data = await generateDailyWord();
         setWordData(data);
         
-        // Pre-fetch audio for lower latency
-        const audio = await getPronunciationAudio(data.word);
+        // Pre-fetch audio for lower latency (using cached wrapper)
+        const audio = await getDailyWordAudio(data.word);
         setAudioCache(audio);
         
         setAppState(AppState.IDLE);
