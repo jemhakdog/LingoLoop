@@ -31,8 +31,13 @@ export const generateDailyWord = async (): Promise<DailyWord> => {
     }
   });
 
-  const text = response.text;
+  let text = response.text;
   if (!text) throw new Error("No response from Gemini");
+
+  // Clean up potential markdown formatting if present (e.g. ```json ... ```)
+  if (text.trim().startsWith("```")) {
+    text = text.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+  }
 
   return JSON.parse(text) as DailyWord;
 };
@@ -45,11 +50,13 @@ export const getPronunciationAudio = async (text: string): Promise<string> => {
 
   const response = await ai.models.generateContent({
     model,
-    contents: {
-      parts: [{ text: text }]
-    },
+    contents: [
+      {
+        parts: [{ text: text }]
+      }
+    ],
     config: {
-      responseModalities: [Modality.AUDIO],
+      responseModalities: ["AUDIO"],
       speechConfig: {
         voiceConfig: {
           prebuiltVoiceConfig: { voiceName: 'Kore' },
@@ -61,7 +68,8 @@ export const getPronunciationAudio = async (text: string): Promise<string> => {
   const audioData = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
 
   if (!audioData) {
-    throw new Error("Failed to generate audio content");
+    console.error("Gemini TTS unexpected response:", JSON.stringify(response, null, 2));
+    throw new Error("Failed to generate audio content. The model may have returned text instead of audio.");
   }
 
   return audioData;
