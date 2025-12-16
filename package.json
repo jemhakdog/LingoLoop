@@ -15,7 +15,9 @@
     "react-dom": "^19.2.3",
     "clsx": "latest",
     "tailwind-merge": "latest",
-    "class-variance-authority": "latest"
+    "class-variance-authority": "latest",
+    "@vitejs/plugin-react": "^5.1.2",
+    "vite": "^7.3.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
