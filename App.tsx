@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { generateDailyWord, getPronunciationAudio } from './services/geminiService';
 import { playPCMAudio } from './services/audioUtils';
@@ -6,6 +5,8 @@ import { WordCard } from './components/WordCard';
 import { PronunciationDojo } from './components/PronunciationDojo';
 import { DailyWord, AppState } from './types';
 import { Loader2, Zap } from 'lucide-react';
+import { Card, CardContent, CardHeader } from './components/ui/card';
+import { Button } from './components/ui/button';
 
 const App: React.FC = () => {
   const [wordData, setWordData] = useState<DailyWord | null>(null);
@@ -79,7 +80,7 @@ const App: React.FC = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="w-full max-w-md flex flex-col items-center pt-16">
+      <main className="w-full max-w-md flex flex-col items-center pt-16 pb-12">
         
         {appState === AppState.LOADING && (
           <div className="flex flex-col items-center justify-center h-64 animate-pulse">
@@ -89,16 +90,18 @@ const App: React.FC = () => {
         )}
 
         {appState === AppState.ERROR && (
-            <div className="text-center p-6 bg-rose-50 rounded-xl border border-rose-100">
-                <p className="text-rose-600 font-medium mb-2">Oops!</p>
-                <p className="text-slate-600 text-sm">{error}</p>
-                <button 
-                    onClick={() => window.location.reload()}
-                    className="mt-4 px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-medium hover:bg-rose-700 transition"
-                >
-                    Retry
-                </button>
-            </div>
+            <Card className="border-rose-100 bg-rose-50 shadow-sm">
+                <CardContent className="flex flex-col items-center p-6 text-center">
+                    <p className="text-rose-600 font-medium mb-2">Oops!</p>
+                    <p className="text-slate-600 text-sm mb-4">{error}</p>
+                    <Button 
+                        variant="destructive"
+                        onClick={() => window.location.reload()}
+                    >
+                        Retry
+                    </Button>
+                </CardContent>
+            </Card>
         )}
 
         {wordData && appState !== AppState.LOADING && appState !== AppState.ERROR && (
@@ -109,22 +112,24 @@ const App: React.FC = () => {
                 isPlaying={isPlayingAudio}
             />
             
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 flex flex-col items-center">
-                <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">Pronunciation Dojo</h2>
-                <PronunciationDojo 
-                    targetWord={wordData.word}
-                    onSuccess={handleSuccess}
-                    onFail={handleFail}
-                    onRetry={handleRetry}
-                    appState={appState}
-                />
-            </div>
+            <Card className="w-full max-w-md border-slate-100 shadow-lg">
+                <CardContent className="flex flex-col items-center p-6">
+                    <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">Pronunciation Dojo</h2>
+                    <PronunciationDojo 
+                        targetWord={wordData.word}
+                        onSuccess={handleSuccess}
+                        onFail={handleFail}
+                        onRetry={handleRetry}
+                        appState={appState}
+                    />
+                </CardContent>
+            </Card>
           </>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 text-center text-slate-300 text-xs">
+      <footer className="mt-auto text-center text-slate-300 text-xs py-4">
          <p>Powered by Gemini 2.5 Flash</p>
       </footer>
     </div>

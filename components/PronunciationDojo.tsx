@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Mic, RefreshCw, Check, X, AlertCircle } from 'lucide-react';
+import { Mic, RefreshCw, Check, AlertCircle } from 'lucide-react';
 import { AppState } from '../types';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { Button } from './ui/button';
+import { cn } from '../lib/utils';
 
 interface PronunciationDojoProps {
   targetWord: string;
@@ -71,23 +73,25 @@ export const PronunciationDojo: React.FC<PronunciationDojoProps> = ({
     <div className="w-full max-w-md flex flex-col items-center">
       <div className="relative mb-8">
         {/* Main Action Button */}
-        <button
+        <Button
+          variant="mic"
+          size="mic"
           onClick={handleMicClick}
           disabled={appState === AppState.PROCESSING || appState === AppState.SUCCESS}
-          className={`
-            relative z-10 w-24 h-24 rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl
-            ${appState === AppState.LISTENING ? 'bg-rose-500 scale-110 shadow-rose-500/50' : ''}
-            ${appState === AppState.IDLE ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/50' : ''}
-            ${appState === AppState.SUCCESS ? 'bg-emerald-500 scale-100 shadow-emerald-500/50 cursor-default' : ''}
-            ${appState === AppState.FAIL ? 'bg-slate-700 hover:bg-slate-800' : ''}
-          `}
+          className={cn(
+            "relative z-10 border-0",
+            appState === AppState.LISTENING && "bg-rose-500 hover:bg-rose-600 scale-110 shadow-rose-500/50",
+            appState === AppState.IDLE && "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/50",
+            appState === AppState.SUCCESS && "bg-emerald-500 hover:bg-emerald-500 scale-100 shadow-emerald-500/50 cursor-default opacity-100",
+            appState === AppState.FAIL && "bg-slate-700 hover:bg-slate-800"
+          )}
         >
           {appState === AppState.LISTENING && <Mic className="text-white animate-pulse" size={40} />}
           {appState === AppState.IDLE && <Mic className="text-white" size={40} />}
           {appState === AppState.SUCCESS && <Check className="text-white" size={48} />}
           {appState === AppState.FAIL && <RefreshCw className="text-white" size={36} />}
           {appState === AppState.PROCESSING && <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>}
-        </button>
+        </Button>
 
         {/* Pulse rings for listening state */}
         {appState === AppState.LISTENING && (
@@ -122,11 +126,12 @@ export const PronunciationDojo: React.FC<PronunciationDojoProps> = ({
       
       {/* Transcript Feedback */}
       {feedbackMessage && appState !== AppState.LISTENING && (
-        <div className={`mt-2 p-3 rounded-lg text-sm text-center max-w-xs ${
-            appState === AppState.SUCCESS ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
-            appState === AppState.FAIL ? 'bg-rose-50 text-rose-700 border border-rose-100' :
-            'bg-slate-100 text-slate-600'
-        }`}>
+        <div className={cn(
+          "mt-2 p-3 rounded-lg text-sm text-center max-w-xs border",
+          appState === AppState.SUCCESS ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+          appState === AppState.FAIL ? 'bg-rose-50 text-rose-700 border-rose-100' :
+          'bg-slate-100 text-slate-600 border-slate-200'
+        )}>
           {feedbackMessage}
         </div>
       )}
